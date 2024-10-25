@@ -3,7 +3,6 @@
 
 # Ignore logs
 *.log
-*.ts
 
 # Ignore other personal directories or files
 ../../.anaconda/
