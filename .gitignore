@@ -1,0 +1,12 @@
+# Ignore macOS system files
+.DS_Store
+
+# Ignore logs
+*.log
+
+# Ignore other personal directories or files
+../../.anaconda/
+../../.android/
+../../.ssh/
+# Add any other paths that you want to ignore
+node_modules
