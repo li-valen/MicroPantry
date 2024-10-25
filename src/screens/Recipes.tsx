@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // Import necessary modules and hooks from React
 import {
   View,
   Text,
@@ -10,80 +10,91 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+} from 'react-native'; // Import React Native components
+import { Ionicons } from '@expo/vector-icons'; // Import icons from Expo
+import { LinearGradient } from 'expo-linear-gradient'; // Import LinearGradient for gradient button styling
 
+// Define the interface for recipe items
 interface RecipeItem {
-  id: number;
-  title: string;
+  id: number; // Unique identifier for each recipe
+  title: string; // Title of the recipe
 }
 
+// Define the main functional component for the recipes screen
 export default function RecipesScreen() {
+  // State for managing the list of recipes and the input for a new recipe
   const [recipeList, setRecipeList] = useState<RecipeItem[]>([]);
   const [newRecipe, setNewRecipe] = useState<string>('');
 
-  // Function to add new recipes
+  // Function to add a new recipe to the list
   const addRecipe = () => {
+    // Check if the input is empty
     if (newRecipe.trim() === '') {
-      Alert.alert('Error', 'Please enter a valid recipe name');
+      Alert.alert('Error', 'Please enter a valid recipe name'); // Show an alert if empty
       return;
     }
+    // Create a new recipe object
     const newRecipeObject: RecipeItem = {
-      id: Date.now(),
-      title: newRecipe,
+      id: Date.now(), // Use current timestamp as a unique ID
+      title: newRecipe, // Set the title from the input
     };
+    // Update the recipe list state with the new recipe
     setRecipeList([...recipeList, newRecipeObject]);
-    setNewRecipe(''); 
-    Keyboard.dismiss(); 
+    setNewRecipe(''); // Clear the input field
+    Keyboard.dismiss(); // Dismiss the keyboard after adding
   };
 
+  // Function to delete a recipe by its ID
   const deleteRecipe = (id: number) => {
-    const updatedList = recipeList.filter((item) => item.id !== id);
-    setRecipeList(updatedList);
+    const updatedList = recipeList.filter((item) => item.id !== id); // Filter out the recipe to be deleted
+    setRecipeList(updatedList); // Update the state with the new list
   };
 
+  // Render function for each item in the FlatList
   const renderItem = ({ item }: { item: RecipeItem }) => (
-    <View style={styles.itemContainer}>
-      <Text style={styles.itemText}>{item.title}</Text>
-      <TouchableOpacity onPress={() => deleteRecipe(item.id)}>
-        <Ionicons name="trash-outline" size={24} color="#ff6b6b" />
+    <View style={styles.itemContainer}> {/* Container for each recipe item */}
+      <Text style={styles.itemText}>{item.title}</Text> {/* Display the recipe title */}
+      <TouchableOpacity onPress={() => deleteRecipe(item.id)}> {/* Delete button */}
+        <Ionicons name="trash-outline" size={24} color="#ff6b6b" /> {/* Trash icon */}
       </TouchableOpacity>
     </View>
   );
 
   return (
+    // KeyboardAvoidingView to adjust view when keyboard is active
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Different behavior for iOS and Android
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0} // Offset for iOS keyboard
     >
-      <View style={styles.innerContainer}>
-        <Text style={styles.title}>Recipes</Text>
+      <View style={styles.innerContainer}> {/* Inner container for layout */}
+        <Text style={styles.title}>Recipes</Text> {/* Title of the screen */}
 
+        {/* FlatList to render the list of recipes */}
         <FlatList
-          data={recipeList}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-          ListEmptyComponent={<Text style={styles.emptyText}>No recipes added yet</Text>}
+          data={recipeList} // Data source for the list
+          keyExtractor={(item) => item.id.toString()} // Unique key for each item
+          renderItem={renderItem} // Function to render each item
+          ListEmptyComponent={<Text style={styles.emptyText}>No recipes added yet</Text>} // Message when list is empty
         />
 
+        {/* Input area for adding new recipes */}
         <View style={styles.addItemContainer}>
           <TextInput
-            style={styles.input}
-            placeholder="Add new recipe"
-            placeholderTextColor="#aaa"
-            value={newRecipe}
-            onChangeText={setNewRecipe}
+            style={styles.input} // Input field styles
+            placeholder="Add new recipe" // Placeholder text
+            placeholderTextColor="#aaa" // Color for placeholder text
+            value={newRecipe} // Bind state value to input
+            onChangeText={setNewRecipe} // Update state on text change
           />
-          <TouchableOpacity style={styles.addButton} onPress={addRecipe}>
+          <TouchableOpacity style={styles.addButton} onPress={addRecipe}> {/* Button to add recipe */}
             <LinearGradient
-              colors={['#3094c5', '#156bba']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.gradientButton}
+              colors={['#3094c5', '#156bba']} // Gradient colors for the button
+              start={{ x: 0, y: 0 }} // Start position for gradient
+              end={{ x: 1, y: 0 }} // End position for gradient
+              style={styles.gradientButton} // Styles for the gradient button
             >
-              <Ionicons name="add" size={28} color="white" />
+              <Ionicons name="add" size={28} color="white" /> {/* Add icon */}
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -92,78 +103,79 @@ export default function RecipesScreen() {
   );
 }
 
+// Styles for the component
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#000', 
+    flex: 1, // Fill the entire screen
+    backgroundColor: '#000', // Black background for the container
   },
   innerContainer: {
-    padding: 20,
-    flex: 1,
-    justifyContent: 'space-between',
+    padding: 20, // Padding around the inner container
+    flex: 1, // Fill available space
+    justifyContent: 'space-between', // Space elements evenly
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff', 
-    marginBottom: 20,
+    fontSize: 28, // Title font size
+    fontWeight: 'bold', // Bold text
+    color: '#fff', // White text color
+    marginBottom: 20, // Space below title
   },
   emptyText: {
-    color: '#aaa',
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 50,
+    color: '#aaa', // Gray text for empty state
+    fontSize: 16, // Font size for empty state message
+    textAlign: 'center', // Center the text
+    marginTop: 50, // Space above empty state message
   },
   itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#1a1a1a', 
-    padding: 15,
-    marginBottom: 10,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    flexDirection: 'row', // Arrange children in a row
+    alignItems: 'center', // Center vertically
+    justifyContent: 'space-between', // Space between item text and delete button
+    backgroundColor: '#1a1a1a', // Dark background for item
+    padding: 15, // Padding inside item container
+    marginBottom: 10, // Space below item
+    borderRadius: 10, // Rounded corners
+    shadowColor: '#000', // Shadow color for item
+    shadowOffset: { width: 0, height: 2 }, // Shadow offset
+    shadowOpacity: 0.1, // Shadow opacity
+    shadowRadius: 3, // Shadow radius
+    elevation: 3, // Elevation for Android shadow
   },
   itemText: {
-    fontSize: 18,
-    flex: 1,
-    marginLeft: 10,
-    color: '#fff', 
+    fontSize: 18, // Font size for item text
+    flex: 1, // Allow text to take remaining space
+    marginLeft: 10, // Space between icon and text
+    color: '#fff', // White text color
   },
   addItemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 20,
+    flexDirection: 'row', // Arrange input and button in a row
+    alignItems: 'center', // Center vertically
+    marginTop: 20, // Space above the input area
   },
   input: {
-    flex: 1,
-    backgroundColor: '#1a1a1a', 
-    padding: 15,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-    fontSize: 16,
-    color: '#fff',
+    flex: 1, // Allow input field to take remaining space
+    backgroundColor: '#1a1a1a', // Dark background for input
+    padding: 15, // Padding inside input
+    borderRadius: 10, // Rounded corners for input
+    shadowColor: '#000', // Shadow color for input
+    shadowOffset: { width: 0, height: 2 }, // Shadow offset
+    shadowOpacity: 0.1, // Shadow opacity
+    shadowRadius: 3, // Shadow radius
+    elevation: 3, // Elevation for Android shadow
+    fontSize: 16, // Font size for input text
+    color: '#fff', // White text color for input
   },
   addButton: {
-    marginLeft: 10,
+    marginLeft: 10, // Space between input and button
   },
   gradientButton: {
-    padding: 15,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
+    padding: 15, // Padding inside the button
+    borderRadius: 50, // Circular button
+    justifyContent: 'center', // Center content
+    alignItems: 'center', // Center content horizontally
+    shadowColor: '#000', // Shadow color for button
+    shadowOffset: { width: 0, height: 2 }, // Shadow offset
+    shadowOpacity: 0.2, // Shadow opacity
+    shadowRadius: 4, // Shadow radius
+    elevation: 5, // Elevation for Android shadow
   },
 });

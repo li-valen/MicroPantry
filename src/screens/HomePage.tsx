@@ -43,7 +43,6 @@ const pantryItems = [
     title: "Milk",
     quantity: 2,
     image: require("../../assets/81mcmdJ196L.jpg"), 
-
   },
   {
     id: 2,
@@ -71,34 +70,36 @@ const pantryItems = [
   },
 ];
 
+// Main functional component for HomeScreen
 export default function HomeScreen({ navigation }: { navigation: any }) {
   return (
     <View style={styles.container}>
       <ScrollView>
-        {/* Header */}
+        {/* Header Section */}
         <View style={styles.header}>
-          <Text style={styles.title}>My Pantry</Text>
-          <Ionicons name="person-circle-outline" size={30} color="#3094c5" />
+          <Text style={styles.title}>My Pantry</Text> {/* Title of the app */}
+          <Ionicons name="person-circle-outline" size={30} color="#3094c5" /> {/* User icon */}
         </View>
 
-        {/* Search Bar */}
+        {/* Search Bar for pantry items */}
         <TextInput
           style={styles.searchBar}
           placeholder="Search items..."
-          placeholderTextColor="#ccc"
+          placeholderTextColor="#ccc" // Placeholder text color
         />
 
-        {/* Recipe Suggestions */}
+        {/* Recipe Suggestions Section */}
         <Text style={styles.sectionTitle}>Recipe Suggestions</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {recipes.map((recipe) => (
             <TouchableOpacity key={recipe.id} style={styles.recipeCard}>
-              <Image source={recipe.image} style={styles.recipeImage} />
+              <Image source={recipe.image} style={styles.recipeImage} /> {/* Recipe image */}
               <View style={styles.recipeContent}>
-                <Text style={styles.recipeTitle}>{recipe.title}</Text>
+                <Text style={styles.recipeTitle}>{recipe.title}</Text> {/* Recipe title */}
                 <Text style={styles.recipeDescription}>
-                  {recipe.description}
+                  {recipe.description} {/* Recipe description */}
                 </Text>
+                {/* Button to view recipe details */}
                 <LinearGradient
                   colors={["#3094c5", "#156bba"]}
                   start={{ x: 0, y: 0 }}
@@ -106,7 +107,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                   style={{ borderRadius: 5 }}
                 >
                   <TouchableOpacity style={styles.viewRecipeButton}>
-                    <Text style={styles.buttonText}>View Recipe</Text>
+                    <Text style={styles.buttonText}>View Recipe</Text> {/* Button text */}
                   </TouchableOpacity>
                 </LinearGradient>
               </View>
@@ -119,29 +120,28 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {pantryItems.map((item) => (
             <TouchableOpacity key={item.id} style={styles.pantryCard}>
-              <Image source={item.image} style={styles.pantryImage} />
+              <Image source={item.image} style={styles.pantryImage} /> {/* Pantry item image */}
               <View style={styles.pantryContent}>
-                <Text style={styles.pantryTitle}>{item.title}</Text>
+                <Text style={styles.pantryTitle}>{item.title}</Text> {/* Pantry item title */}
                 <Text style={styles.pantryQuantity}>
-                  Quantity: {item.quantity}
+                  Quantity: {item.quantity} {/* Quantity of the pantry item */}
                 </Text>
               </View>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        {/* Shopping Alerts */}
+        {/* Shopping Alerts Section */}
         <View style={styles.alerts}>
-          <Text style={styles.alertText}>Low stock: Milk, Eggs</Text>
+          <Text style={styles.alertText}>Low stock: Milk, Eggs</Text> {/* Alert for low stock items */}
         </View>
 
-        {/* Recent Activities */}
+        {/* Recent Activities Section */}
         <View style={styles.activities}>
-          <Text style={styles.activityText}>You added 3 items today.</Text>
+          <Text style={styles.activityText}>You added 3 items today.</Text> {/* Recent activity message */}
         </View>
 
         {/* Tips Section */}
-
         <LinearGradient
           colors={["#3094c5", "#156bba"]}
           start={{ x: 0, y: 0 }}
@@ -149,74 +149,61 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           style={styles.tips}
         >
           <Text style={styles.tipsText}>
-            Tip: Plan meals ahead to save time!
+            Tip: Plan meals ahead to save time! {/* Meal planning tip */}
           </Text>
         </LinearGradient>
       </ScrollView>
+      {/* Floating button to navigate to scanner screen */}
       <TouchableOpacity
         style={styles.scanButton}
-        onPress={() => navigation.navigate('Scanner')}      >
-        <MaterialIcons name="qr-code-scanner" size={24} color="#007AFF" />
+        onPress={() => navigation.navigate('Scanner')} // Navigate to scanner screen
+      >
+        <MaterialIcons name="qr-code-scanner" size={24} color="#007AFF" /> {/* QR code scanner icon */}
       </TouchableOpacity>
     </View>
   );
 }
 
+// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#121212",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 10,
+    backgroundColor: "#121212", // Dark background color
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 10, // Padding for status bar
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: "row", // Align header items in a row
+    justifyContent: "space-between", // Space between title and user icon
+    alignItems: "center", // Center items vertically
     marginBottom: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#3094c5",
+    color: "#3094c5", // Title color
   },
   searchBar: {
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#1E1E1E", // Search bar background
     borderRadius: 10,
     padding: 10,
-    color: "white",
+    color: "white", // Text color in search bar
     marginBottom: 20,
-  },
-  quickAccess: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  quickButton: {
-    backgroundColor: "#007AFF",
-    borderRadius: 10,
-    padding: 10,
-    flex: 1,
-    marginHorizontal: 5,
-    alignItems: "center",
-  },
-  quickButtonText: {
-    color: "white",
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "white",
+    color: "white", // Section titles color
     marginBottom: 10,
   },
   recipeCard: {
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#1E1E1E", // Recipe card background
     borderRadius: 10,
     marginRight: 10,
-    width: 200,
-    height: 250,
+    width: 200, // Width of recipe card
+    height: 250, // Height of recipe card
     overflow: "hidden",
-    shadowColor: "#000",
+    shadowColor: "#000", // Shadow properties for the recipe card
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 3,
@@ -224,62 +211,62 @@ const styles = StyleSheet.create({
   },
   recipeImage: {
     width: "100%",
-    height: 120,
+    height: 120, // Height of recipe image
   },
   recipeContent: {
-    padding: 10,
+    padding: 10, // Padding inside recipe card
   },
   recipeTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "white",
+    color: "white", // Recipe title color
     marginBottom: 5,
   },
   recipeDescription: {
-    color: "#ccc",
+    color: "#ccc", // Description text color
     fontSize: 14,
     marginBottom: 10,
   },
   viewRecipeButton: {
     borderRadius: 5,
     padding: 5,
-    alignItems: "center",
+    alignItems: "center", // Center align button text
   },
   buttonText: {
     color: "white",
-    fontWeight: "bold",
+    fontWeight: "bold", // Button text weight
   },
   alerts: {
-    backgroundColor: "#FFCC00",
+    backgroundColor: "#FFCC00", // Alert background color
     borderRadius: 10,
     padding: 10,
     marginVertical: 10,
   },
   alertText: {
-    color: "black",
+    color: "black", // Alert text color
   },
   activities: {
     marginVertical: 10,
   },
   activityText: {
-    color: "white",
+    color: "white", // Recent activities text color
   },
   tips: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#007AFF", // Tips section background color
     borderRadius: 10,
     padding: 10,
     marginVertical: 10,
   },
   tipsText: {
-    color: "white",
+    color: "white", // Tips text color
   },
   pantryCard: {
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#1E1E1E", // Pantry card background color
     borderRadius: 10,
     marginRight: 10,
-    width: 120,
+    width: 120, // Width of pantry card
     overflow: "hidden",
-    shadowColor: "#000",
+    shadowColor: "#000", // Shadow properties for the pantry card
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 3,
@@ -287,34 +274,30 @@ const styles = StyleSheet.create({
   },
   pantryImage: {
     width: "100%",
-    height: 80,
+    height: 80, // Height of pantry item image
   },
   pantryContent: {
-    padding: 10,
+    padding: 10, // Padding inside pantry card
   },
   pantryTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "white",
+    color: "white", // Pantry item title color
   },
   pantryQuantity: {
-    color: "#ccc",
+    color: "#ccc", // Quantity text color
     fontSize: 12,
   },
   scanButton: {
     position: "absolute",
-    bottom: 20,
+    bottom: 20, // Positioning of the scan button
     right: 20,
-    backgroundColor: "#fff",
-    borderRadius: 100,
+    backgroundColor: "#fff", // Scan button background color
+    borderRadius: 100, // Round button
     alignItems: "center",
-    width: 70,
-    height: 70,
+    width: 70, // Button width
+    height: 70, // Button height
     flex: 1,
-    justifyContent: "center",
-  },
-  scanButtonText: {
-    color: "white",
-    fontWeight: "bold",
+    justifyContent: "center", // Center icon in button
   },
 });

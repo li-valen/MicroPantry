@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context"; // Safe area for handling notch and status bar
 import {
   Text,
   StyleSheet,
@@ -11,62 +11,66 @@ import {
   ImageBackground,
   Alert,
   ActivityIndicator,
-} from "react-native";
-import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { LinearGradient } from "expo-linear-gradient";
+} from "react-native"; // Basic React Native components
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig"; // Firebase configuration
+import { signInWithEmailAndPassword } from "firebase/auth"; // Function to sign in with email and password
+import { doc, setDoc, getDoc } from "firebase/firestore"; // Firestore functions for document operations
+import { LinearGradient } from "expo-linear-gradient"; // For creating a gradient background
 
+// Functional component for the login screen
 const Login = ({ navigation }: { navigation: any }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // State variables for email, password, and loading status
+  const [email, setEmail] = useState(""); // Email input state
+  const [password, setPassword] = useState(""); // Password input state
+  const [isLoading, setIsLoading] = useState(false); // Loading state for the login process
 
-  // Check if user is logged in. If so, redirect to onboarding
+  // Effect hook to check if the user is already logged in
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       if (FIREBASE_AUTH.currentUser) {
-        navigation.navigate("Onboarding");
+        navigation.navigate("Onboarding"); // Redirect to Onboarding if user is logged in
       }
     });
 
-    return unsubscribe;
+    return unsubscribe; // Cleanup subscription on unmount
   }, [navigation]);
 
+  // Function to handle user login
   const loginFunction = async () => {
-    setIsLoading(true);
+    setIsLoading(true); // Set loading state to true
     try {
+      // Attempt to sign in the user with email and password
       const userCredential = await signInWithEmailAndPassword(
         FIREBASE_AUTH,
         email,
         password
       );
-      const user: any = userCredential.user;
-      setIsLoading(false);
+      const user: any = userCredential.user; // Get user object from credential
+      setIsLoading(false); // Reset loading state
 
-      // Check if user is verified
+      // Check if user email is verified
       if (!user.emailVerified) {
-        throw new Error("Email not verified");
+        throw new Error("Email not verified"); // Throw error if email is not verified
       }
 
-      const userRef: any = doc(FIRESTORE_DB, "users", user.uid);
+      const userRef: any = doc(FIRESTORE_DB, "users", user.uid); // Reference to the user's document in Firestore
 
-      // Check if user is onboarded
+      // Check if user document exists in Firestore
       const userDoc = await getDoc(userRef);
       if (userDoc.exists()) {
-        const userData: any = userDoc.data();
+        const userData: any = userDoc.data(); // Get user data from Firestore
         if (!userData.onboarded) {
           console.log("User is not onboarded, redirecting to onboarding");
-          navigation.navigate("Onboarding");
+          navigation.navigate("Onboarding"); // Redirect to Onboarding if not onboarded
         } else {
           console.log("User is onboarded, redirecting to home");
-          navigation.navigate("Home");
+          navigation.navigate("Home"); // Redirect to Home if onboarded
         }
       } else {
-        // Create user with default values
+        // Create a new user document with default values if it does not exist
         await setDoc(userRef, {
           email: user.email,
-          username: user.email.split("@")[0],
+          username: user.email.split("@")[0], // Extract username from email
           pantry: null,
           preferredProviders: [],
           onboarded: false,
@@ -74,127 +78,121 @@ const Login = ({ navigation }: { navigation: any }) => {
         });
 
         console.log("User is not onboarded, redirecting after creating user");
-        navigation.navigate("Onboarding");
+        navigation.navigate("Onboarding"); // Redirect to Onboarding after creating user
       }
     } catch (error) {
-      setIsLoading(false);
-      // Check for common errors
+      setIsLoading(false); // Reset loading state on error
+      // Check for common error cases
       if (error.code === "auth/user-not-found") {
-        alert("User not found");
+        alert("User not found"); // Alert if user not found
       } else if (error.code === "auth/invalid-email") {
-        alert("Invalid email");
+        alert("Invalid email"); // Alert for invalid email
       } else if (error.code === "auth/wrong-password") {
-        alert("Wrong password");
+        alert("Wrong password"); // Alert for wrong password
       } else if (error.code === "auth/email-not-verified") {
-        alert("Email not verified");
+        alert("Email not verified"); // Alert for unverified email
       } else if (error.code === "auth/too-many-requests") {
-        alert("Too many requests");
+        alert("Too many requests"); // Alert for too many requests
       } else if (error.code === "auth/invalid-credential") {
-        alert("Invalid credential. Are your email and password correct?");
+        alert("Invalid credential. Are your email and password correct?"); // Alert for invalid credentials
       } else {
-        let errorMessage = "";
+        let errorMessage = ""; // Generic error message
         if (error instanceof Error) {
-          errorMessage = error.message;
+          errorMessage = error.message; // Get error message if it's an instance of Error
         }
 
+        // Clean up error message for better readability
         errorMessage = errorMessage.replace("Firebase: Error: ", "");
         errorMessage = errorMessage.replace("(", "").replace(")", "");
         errorMessage = errorMessage.replace("auth/", "");
 
-        alert(errorMessage);
+        alert(errorMessage); // Show alert with error message
       }
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* background gradient */}
       <LinearGradient
         colors={["#156bba", "#4e4e4e"]}
         style={styles.backgroundGradient}
       >
-        {/* Image Above Title */}
         <View style={styles.imageContainer}>
           <ImageBackground
-            source={require("../../assets/istockphoto-1318452948-612x612.jpg")} // Update with your image path
+            source={require("../../assets/istockphoto-1318452948-612x612.jpg")} // Image used as a background
             style={styles.image}
-            // resizeMode="cover"
           >
             <LinearGradient
               colors={["transparent", "#23649f"]}
-              style={styles.imageOverlay}
+              style={styles.imageOverlay} // Gradient overlay for better text visibility
             />
           </ImageBackground>
         </View>
 
         <View style={styles.titleFormContainer}>
           <View style={styles.titleView}>
-            <Text style={styles.title}>Welcome Back!</Text>
+            <Text style={styles.title}>Welcome Back!</Text> 
             <Text style={styles.tagline}>
-              Your go-to app for delicious recipes
+              Your go-to app for delicious recipes 
             </Text>
           </View>
         </View>
 
-        {/* Form */}
+        {/* Form for user input */}
         <View style={styles.form}>
           {/* Email Input */}
           <View style={styles.inputBox}>
             <TextInput
-              placeholder="Email"
-              placeholderTextColor={"rgba(255, 255, 255, 0.5)"}
-              autoCapitalize="none"
-              onChangeText={(text) => setEmail(text)}
-              style={styles.textInput}
+              placeholder="Email" // Placeholder for email input
+              placeholderTextColor={"rgba(255, 255, 255, 0.5)"} // Placeholder text color
+              autoCapitalize="none" // Disable auto-capitalization
+              onChangeText={(text) => setEmail(text)} // Update email state
+              style={styles.textInput} // Text input styles
             />
           </View>
           <View style={styles.inputBox}>
             <TextInput
-              placeholder="Password"
-              placeholderTextColor={"rgba(255, 255, 255, 0.5)"}
-              secureTextEntry={true}
-              autoCapitalize="none"
-              onChangeText={(text) => setPassword(text)}
-              style={styles.textInput}
+              placeholder="Password" // Placeholder for password input
+              placeholderTextColor={"rgba(255, 255, 255, 0.5)"} // Placeholder text color
+              secureTextEntry={true} // Mask password input
+              autoCapitalize="none" // Disable auto-capitalization
+              onChangeText={(text) => setPassword(text)} // Update password state
+              style={styles.textInput} // Text input styles
             />
           </View>
           <View style={styles.loginButtonView}>
             <TouchableOpacity
               style={styles.loginButtonTouchableOpacity}
-              // onPress={loginFunction}
-              onPress={() => navigation.navigate("Onboarding")}
-              disabled={isLoading}
+              onPress={loginFunction} // Trigger login function on press
+              disabled={isLoading} // Disable button when loading
             >
               <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Loading Spinner */}
           {isLoading && (
             <ActivityIndicator
-              size="large"
-              color="#3098ca"
-              style={styles.spinner}
+              size="large" // Spinner size
+              color="#3098ca" // Spinner color
+              style={styles.spinner} // Spinner styles
             />
           )}
 
-          {/* Signup */}
           <View style={styles.signupView}>
             <Text style={styles.signupText}>Don't have an account?</Text>
             <TouchableOpacity onPress={() => navigation.navigate("Register")}>
               <Text style={[styles.signupText, { color: "#64c2ec" }]}>
                 {" "}
-                Register
+                Register 
               </Text>
             </TouchableOpacity>
           </View>
 
-          {/* Forgot Password */}
           <View style={styles.forgotPasswordView}>
             <TouchableOpacity>
               <Text style={[styles.signupText, { color: "#64c2ec" }]}>
                 {" "}
-                Forgot Password
+                Forgot Password 
               </Text>
             </TouchableOpacity>
           </View>
@@ -204,122 +202,123 @@ const Login = ({ navigation }: { navigation: any }) => {
   );
 };
 
+// Styles for the component
 const styles = StyleSheet.create({
   backgroundGradient: {
-    flex: 1,
+    flex: 1, // Allow the gradient to fill the whole screen
     padding: 0,
   },
   container: {
-    height: "100%",
-    backgroundColor: "#000",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    height: "100%", // Full height of the screen
+    backgroundColor: "#000", // Background color for the container
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0, // Adjust padding for Android status bar
   },
   imageContainer: {
-    width: "100%",
-    height: 200, // Adjust as needed for your layout
-    overflow: "hidden",
-    position: "relative",
+    width: "100%", // Full width of the image container
+    height: 200, // Height of the image container
+    overflow: "hidden", // Hide overflow
+    position: "relative", // Relative positioning for the overlay
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: "100%", // Full width of the image
+    height: "100%", // Full height of the image
   },
   imageOverlay: {
-    position: "absolute",
+    position: "absolute", // Absolute positioning to overlay gradient
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
   },
   titleFormContainer: {
-    flex: 1,
-    justifyContent: "space-around",
+    flex: 1, // Flexible height to adapt to content
+    justifyContent: "space-around", // Space out children evenly
     paddingTop: 10,
     paddingBottom: 10,
   },
   titleView: {
-    alignItems: "center",
+    alignItems: "center", // Center align title view
   },
   title: {
-    color: "#fff",
-    fontWeight: "bold",
-    letterSpacing: 2,
-    fontSize: 42,
+    color: "#fff", // Title color
+    fontWeight: "bold", // Bold font
+    letterSpacing: 2, // Letter spacing
+    fontSize: 42, // Title font size
   },
   form: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    flex: 1, // Flexible height to adapt to content
+    alignItems: "center", // Center align form elements
+    justifyContent: "center", // Center elements vertically
   },
   inputBox: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderColor: "#3098ca",
-    borderWidth: 1,
-    borderRadius: 10,
-    width: "95%",
-    marginBottom: 20,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    shadowColor: "#000",
+    backgroundColor: "rgba(255, 255, 255, 0.2)", // Semi-transparent background
+    borderColor: "#3098ca", // Border color
+    borderWidth: 1, // Border width
+    borderRadius: 10, // Rounded corners
+    width: "95%", // Input box width
+    marginBottom: 20, // Space between input boxes
+    paddingHorizontal: 15, // Horizontal padding
+    paddingVertical: 10, // Vertical padding
+    shadowColor: "#000", // Shadow color
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 2, // Vertical shadow offset
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.5, // Shadow opacity
+    shadowRadius: 3.84, // Shadow blur radius
+    elevation: 5, // Elevation for Android
   },
   textInput: {
-    color: "#fff",
-    fontSize: 16,
+    color: "#fff", // Text color
+    fontSize: 16, // Text font size
   },
   loginButtonView: {
-    marginTop: 30,
-    width: "90%",
+    marginTop: 30, // Space above the login button
+    width: "90%", // Width of the button container
   },
   loginButtonTouchableOpacity: {
-    width: "100%",
-    backgroundColor: "#3098ca",
-    padding: 10,
-    borderRadius: 10,
-    alignItems: "center",
-    shadowColor: "#000",
+    width: "100%", // Full width for button
+    backgroundColor: "#3098ca", // Button background color
+    padding: 10, // Button padding
+    borderRadius: 10, // Rounded button corners
+    alignItems: "center", // Center align text in button
+    shadowColor: "#000", // Shadow color for button
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 2, // Vertical shadow offset
     },
-    shadowOpacity: 0.5,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.5, // Shadow opacity
+    shadowRadius: 3.84, // Shadow blur radius
+    elevation: 5, // Elevation for Android
   },
   loginButtonText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#fff",
+    fontSize: 20, // Font size for button text
+    fontWeight: "bold", // Bold font for button text
+    color: "#fff", // Text color for button
   },
   signupView: {
-    flexDirection: "row",
-    marginTop: 10,
-    justifyContent: "center",
+    flexDirection: "row", // Horizontal layout for signup prompt
+    marginTop: 10, // Space above the prompt
+    justifyContent: "center", // Center align the prompt
   },
   signupText: {
-    color: "white",
-    fontSize: 14,
+    color: "white", // Text color for signup prompt
+    fontSize: 14, // Font size for signup text
   },
   forgotPasswordView: {
-    flexDirection: "row",
-    marginTop: 4,
-    justifyContent: "center",
+    flexDirection: "row", // Horizontal layout for forgot password prompt
+    marginTop: 4, // Space above the prompt
+    justifyContent: "center", // Center align the prompt
   },
   spinner: {
-    marginTop: 20,
+    marginTop: 20, // Space above the spinner
   },
   tagline: {
-    color: "#fff",
-    fontSize: 16,
-    textAlign: "center",
-    paddingHorizontal: 20,
+    color: "#fff", // Tagline text color
+    fontSize: 16, // Tagline font size
+    textAlign: "center", // Center align tagline text
+    paddingHorizontal: 20, // Horizontal padding for tagline
   },
 });
 
-export default Login;
+export default Login; // Export the Login component
